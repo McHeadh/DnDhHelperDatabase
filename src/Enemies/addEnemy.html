@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="addEnemy.js"></script>
+    <title>Add Enemy</title>
+</head>
+<body>
+    <form id="AddEnemyForm">
+        <label for="Name">Name:</label>
+        <br>
+        <input type="text" id="name" name="name">
+        <br>
+        <br>
+        <label for="description">Description:</label>
+        <br>
+        <input type="description" id="description" name="description">
+        <br>
+        <br>
+        <label for="characteristics">Characteristics:</label>
+        <br>
+        <div id="characteristics-container">
+        </div>
+        <button type="button" onclick="addCharacteristicField()">Add Characteristic</button>
+        <br>
+        <br>
+        <label for="status">Status:</label>
+        <select id="status" name="status">
+            <option value="alive">Alive</option>
+            <option value="dead">Dead</option>
+            <option value="unknown">Unknown</option>
+        </select>
+        <br>
+        <br>
+        <label for="category">Category:</label>
+        <select id="category" name="category">
+            <option value="normalFoes">Normal Foes</option>
+            <option value="elitesBosses">Elites/Bosses</option>
+        </select>
+        <br>
+        <br>
+        <label for="image">Image:</label>
+        <br>
+        <input type="file" id="image" name="image">
+        <br>
+        <br>
+        <img id="image-preview" src="" alt="Image Preview" style="max-width: 200px; max-height: 200px;">
+        <br>
+        <br>
+        <br>
+        <button id="submit" type="submit">Submit</button> <button id="cancel" type="button">Cancel</button>
+    </form>
+</body>
+</html>

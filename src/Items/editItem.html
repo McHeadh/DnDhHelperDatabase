@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="editItem.js"></script>
+    <title>Edit Item</title>
+</head>
+<body>
+    <form id="EditItemForm">
+        <label for="Name">Name:</label>
+        <br>
+        <input type="text" id="name" name="name">
+        <br>
+        <br>
+        <label for="description">Description:</label>
+        <br>
+        <input type="description" id="description" name="description">
+        <br>
+        <br>
+        <label for="effect">Effect:</label>
+        <br>
+        <input type="effect" id="effect" name="effect">
+        <br>
+        <br>
+        <label for="rarity">Rarity:</label>
+        <br>
+        <input type="rarity" id="rarity" name="rarity">
+        <br>
+        <br>
+        <label for="price">Price:</label>
+        <br>
+        <input type="price" id="price" name="price">
+        <br>
+        <br>
+        <label for="shopType">Shop type:</label>
+        <select id="shopType" name="shopType">
+            <option value="general">General</option>
+            <option value="alchemist">Alchemist</option>
+            <option value="uncategorized">Uncategorized</option>
+        </select>
+        <br>
+        <br>
+        <label for="image">Image:</label>
+        <br>
+        <input type="file" id="image" name="image">
+        <br>
+        <br>
+        <img id="image-preview" src="" alt="Image Preview" style="max-width: 200px; max-height: 200px;">
+        <br>
+        <br>
+        <br>
+        <button id="submit" type="submit">Submit</button> <button id="cancel" type="button">Cancel</button>
+    </form>
+</body>
+</html>
