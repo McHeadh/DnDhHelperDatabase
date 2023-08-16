@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var effect = form.elements["effect"].value;
     var rarity = form.elements["rarity"].value;
     var price = form.elements["price"].value;
+    var isVisible = form.elements["isVisible"].checked;
 
     var shopType;
     if (form.elements["shopType"].value == 'uncategorized')
@@ -49,6 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
       Rarity: rarity,
       Price: price,
       ShopType: shopType,
+      IsVisible: isVisible,
     };
 
     const imageInput = document.getElementById('image');

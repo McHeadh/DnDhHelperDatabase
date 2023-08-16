@@ -25,6 +25,13 @@
         <button type="button" onclick="addCharacteristicField()">Add Characteristic</button>
         <br>
         <br>
+        <label for="regions">Assigned Regions:</label>
+        <br>
+        <div id="regions-container">
+        </div>
+        <button type="button" onclick="addRegionField()">Add Region</button>
+        <br>
+        <br>
         <label for="status">Status:</label>
         <select id="status" name="status">
             <option value="alive">Alive</option>
@@ -38,6 +45,10 @@
             <option value="normalFoes">Normal Foes</option>
             <option value="elitesBosses">Elites/Bosses</option>
         </select>
+        <br>
+        <br>
+        <label for="visible">Visible:</label>
+        <input type="checkbox" name="isVisible" checked>
         <br>
         <br>
         <label for="image">Image:</label>

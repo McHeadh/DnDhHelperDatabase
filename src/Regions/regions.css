@@ -1,0 +1,13 @@
+.region {
+    display: flex; /* Use flex to have the name and icon in the same row */
+    align-items: center; /* Center the content vertically within the item */
+  }
+  
+  .trash-icon {
+    cursor: pointer;
+    margin-left: 8px; /* Add some space between the name and the trash icon */
+  }
+  .edit-icon {
+    cursor: pointer;
+    margin-left: 8px; /* Add some space between the name and the trash icon */
+  }

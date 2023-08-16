@@ -74,6 +74,7 @@ function populateForm(characterDetails) {
     form.elements["positionInTown"].value = characterDetails.positionInTown || '';
     form.elements["status"].value = characterDetails.status || '';
     form.elements["category"].value = characterDetails.category || '';
+    form.elements["isVisible"].checked = characterDetails.isVisible;
 
     var characteristicList = characterDetails.characteristics;
     console.log(characteristicList);
@@ -161,6 +162,7 @@ document.addEventListener('DOMContentLoaded', function () {
             PositionInTown: form.elements["positionInTown"].value,
             Status: form.elements["status"].value,
             Category: form.elements["category"].value,
+            IsVisible: form.elements["isVisible"].checked,
         };
 
         const imageInput = document.getElementById('image');
@@ -171,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function () {
             reader.onload = function () {
                 characterData.ImageData = reader.result.split(',')[1];
 
-                updateCharacterInDatabase(characterId, characterData)
+                updateCharacterInDatabase(parsedCharacterID, characterData)
                     .then((response) => {
                         console.log('Character updated successfully:', response);
                         window.location.href = "characters.html";
@@ -181,10 +183,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         alert('Failed to update the character');
                     });
             }
+            reader.readAsDataURL(imageFile);
         }
         else {
             characterData.ImageData = characterDetails.imageData;
-            updateCharacterInDatabase(characterId, characterData)
+            updateCharacterInDatabase(parsedCharacterID, characterData)
                 .then((response) => {
                     console.log('Character updated successfully:', response);
                     window.location.href = "characters.html";
@@ -225,6 +228,7 @@ function getCharacterIdFromUrl() {
 
 async function updateCharacterInDatabase(characterId, characterData) {
 
+
     const apiUrl = `${window.apiUrl}/Characters/${characterId}`;
 
     try {
@@ -264,9 +268,11 @@ async function updateCharacteristicInDatabase(characteristicId, characteristicVa
 
     const apiUrl = `${window.apiUrl}/Characteristics/${characteristicId}`;
 
+    const parsedCharacteristicId = parseInt(characteristicId, 10);
+
     try {
         const newCharacteristicData = {
-            CharacteristicID: characteristicId,
+            CharacteristicID: parsedCharacteristicId,
             CharacterID: characterId,
             Value: characteristicValue,
         };

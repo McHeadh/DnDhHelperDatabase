@@ -43,6 +43,7 @@ function populateForm(itemDetails) {
   form.elements["effect"].value = itemDetails.effect || '';
   form.elements["rarity"].value = itemDetails.rarity || '';
   form.elements["price"].value = itemDetails.price || '';
+  form.elements["isVisible"].checked = itemDetails.isVisible;
 
   // Handle the case where shopType is null (uncategorized)
   if (itemDetails.shopType === null) {
@@ -99,6 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
       Rarity: form.elements["rarity"].value,
       Price: parseInt(form.elements["price"].value),
       ShopType: form.elements["shopType"].value === 'uncategorized' ? null : form.elements["shopType"].value,
+      IsVisible: form.elements["isVisible"].checked,
     };
 
     const imageInput = document.getElementById('image');

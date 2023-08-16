@@ -1,5 +1,7 @@
 var enemyDetails;
+var avaliableRegions;
 var trashedCharacteristics = [];
+var trashedRegions = [];
 //cancel button
 document.addEventListener('DOMContentLoaded', async function () {
     const button = document.getElementById('cancel');
@@ -18,7 +20,18 @@ document.addEventListener('DOMContentLoaded', async function () {
         window.location.href = "enemies.html";
     }
 
-    populateForm(enemyDetails);
+    try {
+        avaliableRegions = await fetchRegionNames();
+
+        console.log(avaliableRegions);
+
+    } catch (error) {
+        console.error('Error fetching region names:', error);
+        alert('Failed to fetch region names for editing');
+        window.location.href = "enemies.html";
+    }
+
+    populateForm(enemyDetails, avaliableRegions);
 });
 
 function addCharacteristicField() {
@@ -66,18 +79,22 @@ async function fetchEnemyDetails() {
     }
 }
 
-function populateForm(enemyDetails) {
+function populateForm(enemyDetails, avaliableRegions) {
     const form = document.getElementById("EditEnemyForm");
 
     form.elements["name"].value = enemyDetails.name || '';
     form.elements["description"].value = enemyDetails.description || '';
     form.elements["status"].value = enemyDetails.status || '';
     form.elements["category"].value = enemyDetails.category || '';
+    form.elements["isVisible"].checked = enemyDetails.isVisible;
 
     var characteristicList = enemyDetails.characteristics;
     console.log(characteristicList);
+    var regionList = enemyDetails.regions;
+    console.log(regionList);
 
     const characteristicsContainer = document.getElementById('characteristics-container');
+    const regionsContainer = document.getElementById('regions-container');
 
     if (characteristicList.length > 0) {
 
@@ -111,6 +128,48 @@ function populateForm(enemyDetails) {
             characteristicDiv.appendChild(document.createElement('br'));
 
             characteristicsContainer.appendChild(characteristicDiv);
+        }
+    }
+
+    if (regionList.length > 0) {
+
+        for (const region of regionList) {
+            const regionDiv = document.createElement('div');
+            regionDiv.classList.add('region-field');
+
+            const newSelect = document.createElement('select');
+            newSelect.name = 'region';
+            newSelect.setAttribute('data-region-link-id', region.enemyToRegionID);
+
+            for (const element of avaliableRegions) {
+                const newOption = document.createElement('option');
+                newOption.value = element.regionID;
+                newOption.innerHTML = element.name;
+                if (element.regionID === region.region.regionID) {
+                    newOption.selected = true;
+                }
+                newSelect.appendChild(newOption);
+            }
+
+            const deleteIcon = document.createElement('span');
+            deleteIcon.innerHTML = '&#128465;'; // Use the pencil icon HTML entity
+            deleteIcon.classList.add('trash-icon');
+            deleteIcon.style.paddingLeft = '15px';
+            deleteIcon.style.cursor = 'pointer';
+            deleteIcon.addEventListener('click', () => {
+                //add to trashedList
+                trashedRegions.push(region);
+                regionDiv.remove();
+
+                console.log(trashedRegions);
+            });
+
+            regionDiv.appendChild(newSelect);
+            regionDiv.appendChild(deleteIcon);
+            regionDiv.appendChild(document.createElement('br'));
+            regionDiv.appendChild(document.createElement('br'));
+
+            regionsContainer.appendChild(regionDiv);
         }
     }
 
@@ -159,6 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
             Description: form.elements["description"].value,
             Status: form.elements["status"].value,
             Category: form.elements["category"].value,
+            IsVisible: form.elements["isVisible"].checked,
         };
 
         const imageInput = document.getElementById('image');
@@ -209,6 +269,24 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             else { // if it doesn't have id POST request to add new
                 addCharacteristicToDatabase(enemyDetails.enemyID, inputElement.value);
+            }
+        }
+
+        const regionsContainer = document.getElementById('regions-container');
+        const regionSelects = regionsContainer.querySelectorAll('select[name="region"]');
+
+        for (const region of trashedRegions) {
+            deleteRegionLink(region.enemyToRegionID);
+            //delete from database 
+        }
+
+        for (const regionSelect of regionSelects) {
+
+            if (regionSelect.hasAttribute('data-region-link-id')) { // if it has id PUT request to update
+                updateRegionLinkInDatabase(regionSelect.getAttribute('data-region-link-id'), enemyDetails.enemyID, regionSelect.value);
+            }
+            else { // if it doesn't have id POST request to add new
+                addRegionLinkToDatabase(enemyDetails.enemyID, regionSelect.value);
             }
         }
 
@@ -315,3 +393,130 @@ async function addCharacteristicToDatabase(enemyID, characteristicValue) {
         throw error;
     }
 }
+
+async function fetchRegionNames() {
+    const apiUrl = `${window.apiUrl}/Regions/Names`;
+
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+            throw new Error('Failed to fetch enemies from the API.');
+        }
+        return response.json();
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+}
+
+async function addRegionField() {
+    const regionNames = await fetchRegionNames(); // Fetch the available regions
+    const regionsContainer = document.getElementById('regions-container');
+
+    const regionDiv = document.createElement('div');
+    regionDiv.classList.add('region-field');
+
+    const newSelect = document.createElement('select');
+    newSelect.name = 'region';
+
+    for (const element of regionNames) {
+        const newOption = document.createElement('option');
+        newOption.value = element.regionID;
+        newOption.innerHTML = element.name;
+        newSelect.appendChild(newOption);
+    }
+
+    const deleteIcon = document.createElement('span');
+    deleteIcon.innerHTML = '&#128465;';
+    deleteIcon.classList.add('trash-icon');
+    deleteIcon.style.paddingLeft = '15px';
+    deleteIcon.style.cursor = 'pointer';
+    deleteIcon.addEventListener('click', () => {
+        regionDiv.remove();
+    });
+
+    regionDiv.appendChild(newSelect);
+    regionDiv.appendChild(deleteIcon);
+    regionDiv.appendChild(document.createElement('br'));
+    regionDiv.appendChild(document.createElement('br'));
+
+    regionsContainer.appendChild(regionDiv);
+}
+
+async function deleteRegionLink(regionLinkId) {
+    const deleteUrl = `${window.apiUrl}/EnemyToRegions/${regionLinkId}`;
+    try {
+        const response = await fetch(deleteUrl, { method: 'DELETE' });
+        if (!response.ok) {
+            throw new Error('Failed to delete region link from the API.');
+        }
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function updateRegionLinkInDatabase(linkId, enemyId, regionIdString) {
+    const apiUrl = `${window.apiUrl}/EnemyToRegions/${linkId}`;
+
+    const regionId = parseInt(regionIdString, 10);
+
+    try {
+        const newRegionLinkData = {
+            EnemyToRegionID: linkId,
+            EnemyID: enemyId,
+            RegionID: regionId,
+        };
+
+        console.log(newRegionLinkData);
+
+        const response = await fetch(apiUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newRegionLinkData),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update region link in the database');
+        }
+
+        return true;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+async function addRegionLinkToDatabase(enemyId, regionIdString) {
+    const apiUrl = `${window.apiUrl}/EnemyToRegions`;
+
+    const regionId = parseInt(regionIdString, 10);
+
+    try {
+        const newRegionLinkData = {
+            EnemyID: enemyId,
+            RegionID: regionId,
+        };
+
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newRegionLinkData),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to add Region Link to the database');
+        }
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+
+
+

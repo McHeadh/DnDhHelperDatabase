@@ -1,4 +1,5 @@
 var placeDetails;
+var avaliableRegions;
 //cancel button
 document.addEventListener('DOMContentLoaded', async function () {
   const button = document.getElementById('cancel');
@@ -9,6 +10,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   // Fetch place details and populate the form
   try {
     placeDetails = await fetchPlaceDetails();
+    avaliableRegions = await fetchRegionNames();
     populateForm(placeDetails);
   } catch (error) {
     console.error('Error fetching place details:', error);
@@ -40,6 +42,21 @@ function populateForm(placeDetails) {
 
   form.elements["name"].value = placeDetails.name || '';
   form.elements["description"].value = placeDetails.description || '';
+  form.elements["isVisible"].checked = placeDetails.isVisible;
+
+  const regionSelect = document.getElementById('region');
+
+  for (const region of avaliableRegions) {
+    const newOption = document.createElement('option');
+    newOption.value = region.regionID;
+    newOption.innerHTML = region.name;
+
+    if (region.regionID === placeDetails.regionID) {
+      newOption.selected = true;
+  }
+
+    regionSelect.appendChild(newOption);
+  }
 
   // Repopulate the image
   const imagePreview = document.getElementById('image-preview');
@@ -75,16 +92,21 @@ function populateForm(placeDetails) {
 document.addEventListener('DOMContentLoaded', function () {
   const button = document.getElementById('submit');
   var form = document.getElementById("EditPlaceForm");
+  const regionSelect = document.getElementById('region');
   button.addEventListener('click', function () {
     event.preventDefault();
 
     const placeId = getPlaceIdFromUrl();
     const parsedPlaceID = parseInt(placeId);
+    const regionId = parseInt(regionSelect.value);
+    
 
     const placeData = {
       PlaceID: parsedPlaceID,
       Name: form.elements["name"].value,
       Description: form.elements["description"].value,
+      RegionID: regionId,
+      IsVisible: form.elements["isVisible"].checked,
     };
 
     const imageInput = document.getElementById('image');
@@ -130,7 +152,7 @@ function getPlaceIdFromUrl() {
 }
 
 async function updatePlaceInDatabase(placeId, placeData) {
-  
+
   const apiUrl = `${window.apiUrl}/Places/${placeId}`;
 
   try {
@@ -150,5 +172,20 @@ async function updatePlaceInDatabase(placeId, placeData) {
   } catch (error) {
     console.error(error);
     throw error;
+  }
+}
+
+async function fetchRegionNames() {
+  const apiUrl = `${window.apiUrl}/Regions/Names`;
+
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+      throw new Error('Failed to fetch enemies from the API.');
+    }
+    return response.json();
+  } catch (error) {
+    console.error(error);
+    return [];
   }
 }

@@ -7,12 +7,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function addCharacteristicField() {
   const characteristicsContainer = document.getElementById('characteristics-container');
-  const newInput = document.createElement('input');
-  newInput.type = 'text';
-  newInput.name = 'characteristic';
-  characteristicsContainer.appendChild(newInput);
-  characteristicsContainer.appendChild(document.createElement('br'));
-  characteristicsContainer.appendChild(document.createElement('br'));
+
+    const characteristicDiv = document.createElement('div');
+    characteristicDiv.classList.add('characteristic-field');
+
+    const newInput = document.createElement('input');
+    newInput.type = 'text';
+    newInput.name = 'characteristic';
+
+    const deleteIcon = document.createElement('span');
+    deleteIcon.innerHTML = '&#128465;'; // Use the pencil icon HTML entity
+    deleteIcon.classList.add('trash-icon');
+    deleteIcon.style.paddingLeft = '15px';
+    deleteIcon.style.cursor = 'pointer';
+    deleteIcon.addEventListener('click', () => {
+        characteristicDiv.remove();
+    });
+
+    characteristicDiv.appendChild(newInput);
+    characteristicDiv.appendChild(deleteIcon);
+    characteristicDiv.appendChild(document.createElement('br'));
+    characteristicDiv.appendChild(document.createElement('br'));
+
+    characteristicsContainer.appendChild(characteristicDiv);
 }
 
 function getCharacteristics() {
@@ -56,6 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var positionInTown = form.elements["positionInTown"].value;
     var status = form.elements["status"].value;
     var category = form.elements["category"].value;
+    var isVisible = form.elements["isVisible"].checked;
 
 
     const newCharacterData = {
@@ -64,6 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
       PositionInTown: positionInTown,
       Status: status,
       Category: category,
+      IsVisible: isVisible,
     };
 
     const imageInput = document.getElementById('image');

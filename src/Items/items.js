@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 async function fetchItems() {
-  const apiUrl = `${window.apiUrl}/Items`;
+  const apiUrl = `${window.apiUrl}/Items/Names`;
 
   try {
     const response = await fetch(apiUrl);
